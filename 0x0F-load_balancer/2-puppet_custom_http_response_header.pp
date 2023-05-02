@@ -1,17 +1,32 @@
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-
-    root /var/www/html;
-
-    index index.html index.htm index.nginx-debian.html;
-
-    server_name _;
-
-    location / {
-        try_files $uri $uri/ =404;
+# Install Nginx
+class nginx {
+    package { 'nginx':
+        ensure => installed,
     }
-
-    # Custom header response
-    add_header X-Served-By $hostname;
 }
+
+class { 'nginx': }
+
+# Configure custom HTTP header response
+class nginx::custom_header {
+    file { '/etc/nginx/sites-available/default':
+        ensure  => file,
+        content => template('nginx/default.erb'),
+        require => Class['nginx'],
+        notify  => Service['nginx'],
+    }
+}
+
+class { 'nginx::custom_header': }
+
+# Define custom header template
+class nginx::custom_header::template {
+    file { '/etc/nginx/sites-available/default':
+        ensure  => file,
+        content => template('nginx/default.erb'),
+        require => Class['nginx'],
+        notify  => Service['nginx'],
+    }
+}
+
+class { 'nginx::custom_header::template': }
