@@ -1,26 +1,62 @@
 #!/usr/bin/env bash
+# install load balancer
 
-# Install HAproxy
-sudo apt-get update
-sudo apt-get install haproxy -y
+# colors
+blue='\e[1;34m'
+brown='\e[0;33m'
+green='\e[1;32m'
+reset='\033[0m'
 
-# Configure HAproxy
-sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.bak
-sudo bash -c 'echo "
-frontend www
+echo -e "${blue}Updating and doing some minor checks...${reset}\n"
+
+function install() {
+	command -v "$1" &> /dev/null
+
+	#shellcheck disable=SC2181
+	if [ $? -ne 0 ]; then
+		echo -e "	Installing: ${brown}$1${reset}\n"
+		sudo apt-get update -y -qq && \
+			sudo apt-get install -y "$1" -qq
+		echo -e "\n"
+	else
+		echo -e "	${green}${1} is already installed.${reset}\n"
+	fi
+}
+
+install haproxy #install haproxy
+
+echo -e "\n${blue}Setting up some minor stuff.${reset}\n"
+
+# backup default server config file
+sudo cp /etc/haproxy/haproxy.cfg haproxy_default.backup
+
+server_config=\
+"
+defaults
+  mode http
+  timeout client 15s
+  timeout connect 10s
+  timeout server 15s
+  timeout http-request 10s
+
+frontend th3gr00t-tech-frontend
     bind *:80
-    mode http
-    default_backend servers
+    default_backend th3gr00t-tech-backend
 
-backend servers
-    mode http
+backend th3gr00t-tech-backend
     balance roundrobin
-    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
-    server web-01 [STUDENT_ID]-web-01:80 check
-    server web-02 [STUDENT_ID]-web-02:80 check" >> /etc/haproxy/haproxy.cfg'
+    server 172004-web-01 54.157.136.99:80 check
+    server 172004-web-02 54.173.109.63:80 check
+"
 
-# Make HAproxy manageable via init script
-sudo sed -i 's/ENABLED=0/ENABLED=1/' /etc/default/haproxy
+# shellcheck disable=SC2154
+echo "$server_config" | sudo dd status=none of=/etc/haproxy/haproxy.cfg
 
-# Restart HAproxy
-sudo systemctl restart haproxy
+# enable haproxy to be started by init script
+echo "ENABLED=1" | sudo dd status=none of=/etc/default/haproxy
+
+if [ "$(pgrep -c haproxy)" -le 0 ]; then
+	sudo service haproxy start
+else
+	sudo service haproxy restart
+fi

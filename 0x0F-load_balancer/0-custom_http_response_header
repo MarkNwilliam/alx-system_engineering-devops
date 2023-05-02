@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# install load balancer
+# duplicate web-01 to web-02
+# these scripts are an upgrade from the web-server scripts...
+
+# uncomment to see the script run in action
+#set -x
 
 # colors
 blue='\e[1;34m'
@@ -23,40 +27,64 @@ function install() {
 	fi
 }
 
-install haproxy #install haproxy
+install nginx #install nginx
 
 echo -e "\n${blue}Setting up some minor stuff.${reset}\n"
 
+# allowing nginx on firewall
+sudo ufw allow 'Nginx HTTP'
+
+# Give the user ownership to website files for easy editing
+if [ -d "/var/www" ]; then
+	sudo chown -R "$USER":"$USER" /var/www
+	sudo chmod -R 755 /var/www
+else
+	sudo mkdir -p /var/www
+	sudo chown -R "$USER":"$USER" /var/www
+	sudo chmod -R 755 /var/www
+fi
+
+# create directories if not present
+for dir in /var/www/{html,error}; do
+	if ! [ -d "$dir" ]; then
+		mkdir -p "$dir"
+	fi
+done
+
+# creating new index
+echo "Hello World!" > /var/www/html/index.html
+
+# create new error page
+echo "Ceci n'est pas une page" > /var/www/html/error_404.html
+
 # backup default server config file
-sudo cp /etc/haproxy/haproxy.cfg haproxy_default.backup
+sudo cp /etc/nginx/sites-enabled/default nginx-sites-enabled_default.backup
 
 server_config=\
-"
-defaults
-  mode http
-  timeout client 15s
-  timeout connect 10s
-  timeout server 15s
-  timeout http-request 10s
+"server {
+		listen 80 default_server;
+		listen [::]:80 default_server;
+		root /var/www/html;
+		index index.html index.htm index.nginx-debian.html
+		server_name_;
+		add_header X-Served-By \$hostname;
+		location / {
+			try_files \$uri \$uri/ =404;
+		}
+		if (\$request_filename ~ redirect_me){
+			rewrite ^ https://th3-gr00t.tk/ permanent;
+		}
+		error_page 404 /error_404.html;
+		location = /error_404.html {
+			internal;
+		}
+}"
 
-frontend th3gr00t-tech-frontend
-    bind *:80
-    default_backend th3gr00t-tech-backend
+#shellcheck disable=SC2154
+echo "$server_config" | sudo dd status=none of=/etc/nginx/sites-enabled/default
 
-backend th3gr00t-tech-backend
-    balance roundrobin
-    server 172004-web-01 54.157.136.99:80 check
-    server 172004-web-02 54.173.109.63:80 check
-"
-
-# shellcheck disable=SC2154
-echo "$server_config" | sudo dd status=none of=/etc/haproxy/haproxy.cfg
-
-# enable haproxy to be started by init script
-echo "ENABLED=1" | sudo dd status=none of=/etc/default/haproxy
-
-if [ "$(pgrep -c haproxy)" -le 0 ]; then
-	sudo service haproxy start
+if [ "$(pgrep -c nginx)" -le 0 ]; then
+	sudo service nginx start
 else
-	sudo service haproxy restart
+	sudo service nginx restart
 fi
