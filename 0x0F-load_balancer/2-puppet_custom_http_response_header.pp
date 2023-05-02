@@ -1,32 +1,30 @@
-# Install Nginx
-class nginx {
-    package { 'nginx':
-        ensure => installed,
-    }
+# Setup New Ubuntu server with nginx
+# and add a custom HTTP header
+
+exec { 'update system':
+        command => '/usr/bin/apt-get update',
 }
 
-class { 'nginx': }
-
-# Configure custom HTTP header response
-class nginx::custom_header {
-    file { '/etc/nginx/sites-available/default':
-        ensure  => file,
-        content => template('nginx/default.erb'),
-        require => Class['nginx'],
-        notify  => Service['nginx'],
-    }
+package { 'nginx':
+	ensure => 'installed',
+	require => Exec['update system']
 }
 
-class { 'nginx::custom_header': }
-
-# Define custom header template
-class nginx::custom_header::template {
-    file { '/etc/nginx/sites-available/default':
-        ensure  => file,
-        content => template('nginx/default.erb'),
-        require => Class['nginx'],
-        notify  => Service['nginx'],
-    }
+file {'/var/www/html/index.html':
+	content => 'Hello World!'
 }
 
-class { 'nginx::custom_header::template': }
+exec {'redirect_me':
+	command => 'sed -i "24i\	rewrite ^/redirect_me https://th3-gr00t.tk/ permanent;" /etc/nginx/sites-available/default',
+	provider => 'shell'
+}
+
+exec {'HTTP header':
+	command => 'sed -i "25i\	add_header X-Served-By \$hostname;" /etc/nginx/sites-available/default',
+	provider => 'shell'
+}
+
+service {'nginx':
+	ensure => running,
+	require => Package['nginx']
+}
