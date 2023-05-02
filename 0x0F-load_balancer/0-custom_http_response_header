@@ -1,20 +1,35 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Install Nginx
+# Install and configure HAProxy on lb-01 server
+
+# Update the package list and install HAProxy
 sudo apt-get update
-sudo apt-get install nginx -y
+sudo apt-get install -y haproxy
 
-# Stop Nginx service
-sudo systemctl stop nginx
+# Create a backup of the default configuration file
+sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.backup
 
-# Copy Nginx configuration from web-01 to web-02
-sudo scp ubuntu@172004-web-01:/etc/nginx/nginx.conf /etc/nginx/nginx.conf
+# Generate the new configuration file
+cat <<EOF | sudo tee /etc/haproxy/haproxy.cfg > /dev/null
+defaults
+    mode http
+    timeout client 10s
+    timeout server 10s
+    timeout connect 10s
 
-# Start Nginx service
-sudo systemctl start nginx
+frontend http-in
+    bind *:80
+    default_backend webservers
 
-# Add custom header to Nginx configuration
-sudo sed -i 's/# server_tokens off;/server_tokens off;\n    add_header X-Served-By $hostname;/' /etc/nginx/nginx.conf
+backend webservers
+    balance roundrobin
+    option httpchk
+    server web-01 [STUDENT_ID]-web-01:80 check
+    server web-02 [STUDENT_ID]-web-02:80 check
+EOF
 
-# Restart Nginx service
-sudo systemctl restart nginx
+# Enable HAProxy to be managed as a service
+sudo systemctl enable haproxy.service
+
+# Restart HAProxy to apply the changes
+sudo systemctl restart haproxy.service
