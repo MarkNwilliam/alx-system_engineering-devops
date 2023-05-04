@@ -5,7 +5,7 @@ sudo apt-get update
 sudo apt-get install software-properties-common
 sudo add-apt-repository ppa:certbot/certbot
 sudo apt-get update
-sudo apt-get install certbot haproxy
+sudo apt-get install certbot haproxy nginx
 
 # Obtain the SSL certificate
 sudo certbot certonly --standalone -d www.aiglow.tech --preferred-challenges http -m nkugwamarkwilliam@gmail.com --agree-tos --no-eff-email
@@ -56,3 +56,11 @@ EOL"
 
 # Restart HAProxy to apply the changes
 sudo systemctl restart haproxy
+
+# Update the Nginx configuration on web servers
+for ip in "54.157.136.99" "54.173.109.63"; do
+    ssh ubuntu@$ip "
+    sudo sed -i 's|root /var/www/html;|return 200 \"Holberton School\n\";|g' /etc/nginx/sites-available/default;
+    sudo systemctl restart nginx;
+    "
+done
