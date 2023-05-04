@@ -1,27 +1,33 @@
 #!/usr/bin/env bash
-# Displays information about subdomains.
-
-# Variables & parameters
-subdomains=("www" "lb-01" "web-01" "web-02")
-domain="$1"
-sub="$2"
+# Script to display information about subdomains.
 
 # Function to display subdomain information
 display_subdomain_info() {
     local subdomain="$1"
     local domain="$2"
-    local info=$(dig "${subdomain}.${domain}" | grep -A1 'ANSWER SECTION:' | awk 'NR==2')
-    local ip=$(echo "$info" | awk '{print $5}')
-    local record=$(echo "$info" | awk '{print $4}')
-
-    echo "The subdomain ${subdomain} is a ${record} record and points to ${ip}"
+    local info=$(dig +short -t A "${subdomain}.${domain}")
+    
+    if [ -n "$info" ]; then
+        echo "The subdomain ${subdomain} is an A record and points to ${info}"
+    else
+        echo "The subdomain ${subdomain} does not have an A record"
+    fi
 }
 
 # Main script logic
-if [ $# -eq 1 ]; then
+if [ "$#" -eq 0 ]; then
+    echo "Usage: $0 domain [subdomain]"
+    exit 1
+fi
+
+domain="$1"
+sub="$2"
+
+if [ -z "$sub" ]; then
+    subdomains=("www" "lb-01" "web-01" "web-02")
     for subdomain in "${subdomains[@]}"; do
         display_subdomain_info "$subdomain" "$domain"
     done
-elif [ $# -eq 2 ]; then
+else
     display_subdomain_info "$sub" "$domain"
 fi
