@@ -6,19 +6,22 @@ subdomains=("www" "lb-01" "web-01" "web-02")
 domain="$1"
 sub="$2"
 
-dig_cmd() {
-    local sub="$1"
-    local INFO=$(dig "${sub}.${domain}" | grep -A1 'ANSWER SECTION:' | awk 'NR==2')
-    local IP=$(echo "$INFO" | awk '{print $5}')
-    local RECORD=$(echo "$INFO" | awk '{print $4}')
+# Function to display subdomain information
+display_subdomain_info() {
+    local subdomain="$1"
+    local domain="$2"
+    local info=$(dig "${subdomain}.${domain}" | grep -A1 'ANSWER SECTION:' | awk 'NR==2')
+    local ip=$(echo "$info" | awk '{print $5}')
+    local record=$(echo "$info" | awk '{print $4}')
 
-    echo "The subdomain ${sub} is a ${RECORD} record and points to ${IP}"
+    echo "The subdomain ${subdomain} is a ${record} record and points to ${ip}"
 }
 
+# Main script logic
 if [ $# -eq 1 ]; then
-    for subs in "${subdomains[@]}"; do
-        dig_cmd "$subs"
+    for subdomain in "${subdomains[@]}"; do
+        display_subdomain_info "$subdomain" "$domain"
     done
 elif [ $# -eq 2 ]; then
-    dig_cmd "$sub"
+    display_subdomain_info "$sub" "$domain"
 fi
