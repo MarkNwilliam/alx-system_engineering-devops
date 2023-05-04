@@ -42,12 +42,14 @@ frontend http-in
     bind *:80
     bind *:443 ssl crt /etc/letsencrypt/live/www.aiglow.tech/fullchain.pem key /etc/letsencrypt/live/www.aiglow.tech/privkey.pem
     mode http
+    http-request redirect scheme https if !{ ssl_fc }
     default_backend servers
 
 backend servers
     mode http
     balance roundrobin
     option forwardfor
+    http-response set-header X-Served-By %[req.hdr(host)]
     server web-01 54.157.136.99:80 check
     server web-02 54.173.109.63:80 check
 EOL"
