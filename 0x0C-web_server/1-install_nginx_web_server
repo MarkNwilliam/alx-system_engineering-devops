@@ -17,7 +17,7 @@ sudo apt-get update
 sudo apt-get install -y nginx
 
 # Configure Nginx to listen on port 80 and return "Hello World!"
-sudo bash -c 'cat > /etc/nginx/sites-available/default << EOL
+sudo bash -c 'cat > /etc/nginx/sites-enabled/default << EOL
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -33,5 +33,6 @@ server {
 }
 EOL'
 
-# Reload Nginx configuration
-sudo service nginx reload
+# Restart Nginx service
+sudo service nginx restart
+
