@@ -8,8 +8,25 @@ apt-get install -y nginx
 # Create a custom HTML page containing "Hello World!"
 echo "Hello World!" > /var/www/html/index.html
 
-# Modify Nginx default configuration
-sed -i 's/root .*/root \/var\/www\/html;/' /etc/nginx/sites-available/default
+# Backup the original default configuration
+cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+
+# Create a new Nginx configuration
+cat > /etc/nginx/sites-available/default <<EOL
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html;
+
+    server_name _;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOL
 
 # Restart Nginx without using systemctl
 service nginx restart
