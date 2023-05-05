@@ -16,6 +16,9 @@ sudo apt-get remove --purge -y apache2
 sudo apt-get update
 sudo apt-get install -y nginx
 
+# Remove any existing index.html files
+sudo rm -f /var/www/html/index.html
+
 # Create custom index.html file with "Hello World!" content
 sudo bash -c 'echo "Hello World!" > /var/www/html/index.html'
 
@@ -38,3 +41,6 @@ EOL'
 
 # Restart Nginx service
 sudo service nginx restart
+
+# Verify output using curl
+curl localhost
