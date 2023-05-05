@@ -1,28 +1,28 @@
 #!/usr/bin/env bash
 # Install and configure Nginx web server
 
-# Update package list and install Nginx
-apt-get update
+# Update and install Nginx
+apt-get update -y
 apt-get install -y nginx
 
-# Configure Nginx to display "Hello World!" message
-echo "server {
+# Create a new Nginx configuration file
+echo 'server {
     listen 80 default_server;
     listen [::]:80 default_server;
+
     root /var/www/html;
-    index index.html;
+
+    index index.html index.htm index.nginx-debian.html;
+
     server_name _;
+
     location / {
-        return 200 'Hello World!';
-        add_header Content-Type text/plain;
+        try_files $uri $uri/ =404;
     }
-}" > /etc/nginx/sites-available/default
+}' > /etc/nginx/sites-available/default
 
-# Remove default Nginx page
-rm /var/www/html/index.nginx-debian.html
+# Create the index.html file containing "Hello World!"
+echo 'Hello World!' > /var/www/html/index.html
 
-# Create a new index.html file with the "Hello World!" message
-echo "Hello World!" > /var/www/html/index.html
-
-# Restart Nginx to apply changes
+# Restart Nginx
 service nginx restart
