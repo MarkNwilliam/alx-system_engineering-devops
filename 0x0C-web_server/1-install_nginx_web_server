@@ -1,27 +1,15 @@
 #!/usr/bin/env bash
-# Install and configure Nginx web server
+# Install and configure Nginx web server to display a custom page with "Hello World!"
 
 # Update and install Nginx
 apt-get update -y
 apt-get install -y nginx
 
-# Create a custom Nginx configuration file
-echo 'server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
+# Create a custom HTML page containing "Hello World!"
+echo "Hello World!" > /var/www/html/index.html
 
-    root /var/www/html;
+# Modify Nginx default configuration
+sed -i 's/root .*/root \/var\/www\/html;/' /etc/nginx/sites-available/default
 
-    index index.html index.htm index.nginx-debian.html;
-
-    server_name _;
-}' > /etc/nginx/sites-available/default
-
-# Create an index.html file with "Hello World!" message
-echo 'Hello World!' > /var/www/html/index.html
-
-# Remove the default Nginx page
-rm /var/www/html/index.nginx-debian.html
-
-# Restart Nginx
+# Restart Nginx without using systemctl
 service nginx restart
