@@ -5,11 +5,22 @@
 apt-get update -y
 apt-get install -y nginx
 
-# Start Nginx service
-service nginx start
+# Remove the default Nginx configuration and create a new custom configuration
+rm /etc/nginx/sites-enabled/default
+echo "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.html;
+    server_name _;
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}" > /etc/nginx/sites-available/custom
+ln -s /etc/nginx/sites-available/custom /etc/nginx/sites-enabled/
 
-# Remove the default Nginx page and create a new custom page containing "Hello World!"
-echo "Hello World!" > /var/www/html/index.nginx-debian.html
+# Create a new custom page containing "Hello World!"
+echo "Hello World!" > /var/www/html/index.html
 
 # Restart Nginx without using systemctl
 service nginx restart
