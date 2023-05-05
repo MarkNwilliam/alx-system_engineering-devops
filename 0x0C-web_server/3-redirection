@@ -1,20 +1,31 @@
 #!/usr/bin/env bash
-#!/bin/bash
-sudo apt-get update
-sudo apt-get install -y nginx
+# Configures Nginx to redirect /redirect_me to another page with 301 Moved Permanently
 
-sudo bash -c 'cat << EOF > /etc/nginx/sites-available/redirection
+# Update the Nginx configuration file
+sudo bash -c "cat > /etc/nginx/sites-available/redirection" << EOL
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html;
+
     server_name _;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+
     location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+        return 301 https://www.example.com;
     }
 }
-EOF'
+EOL
 
-sudo ln -s /etc/nginx/sites-available/redirection /etc/nginx/sites-enabled/
-sudo rm /etc/nginx/sites-enabled/default
+# Enable the new configuration and remove the default one
+sudo ln -sf /etc/nginx/sites-available/redirection /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
 
+# Restart Nginx without using systemctl
 sudo service nginx restart
+
