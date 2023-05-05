@@ -20,5 +20,8 @@ echo 'server {
 # Create an index.html file with "Hello World!" message
 echo 'Hello World!' > /var/www/html/index.html
 
+# Remove the default Nginx page
+rm /var/www/html/index.nginx-debian.html
+
 # Restart Nginx
 service nginx restart
