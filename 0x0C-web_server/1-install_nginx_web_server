@@ -18,5 +18,11 @@ echo "server {
     }
 }" > /etc/nginx/sites-available/default
 
+# Remove default Nginx page
+rm /var/www/html/index.nginx-debian.html
+
+# Create a new index.html file with the "Hello World!" message
+echo "Hello World!" > /var/www/html/index.html
+
 # Restart Nginx to apply changes
 service nginx restart
