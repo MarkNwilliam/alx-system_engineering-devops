@@ -1,26 +1,8 @@
 #!/usr/bin/env bash
-# Install and configure Nginx web server to display a custom page with "Hello World!"
+# nginx web server listening on port 80
+# returns a page that contains the string "Hello World!"
 
-# Update and install Nginx
-apt-get update -y
-apt-get install -y nginx
-
-# Remove the default Nginx configuration and create a new custom configuration
-rm /etc/nginx/sites-enabled/default
-echo "server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root /var/www/html;
-    index index.html;
-    server_name _;
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-}" > /etc/nginx/sites-available/custom
-ln -s /etc/nginx/sites-available/custom /etc/nginx/sites-enabled/
-
-# Create a new custom page containing "Hello World!"
-echo "Hello World!" > /var/www/html/index.html
-
-# Restart Nginx without using systemctl
-service nginx restart
+sudo apt update -y
+sudo apt install -y nginx
+echo 'Hello World!' > /var/www/html/index.nginx-debian.html
+sudo service nginx start
