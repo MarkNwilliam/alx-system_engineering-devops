@@ -1,24 +1,6 @@
 #!/usr/bin/env bash
-# Install nginx on web server; Nginx should be listening on port 80
-
-# Update package list and install nginx
-sudo apt-get update -y
-sudo apt-get install -y nginx
-
-# Create a custom nginx configuration file to display "Hello World!"
-sudo bash -c 'cat > /etc/nginx/sites-available/default <<EOL
-server {
-        listen 80 default_server;
-        listen [::]:80 default_server ipv6only=on;
-
-        root /usr/share/nginx/html;
-        index index.html;
-
-        location / {
-                return 200 "Hello World!";
-        }
-}
-EOL'
-
-# Restart nginx without using systemctl
-sudo service nginx restart
+# Bash script that Install nginx on your web-01 server and requirements
+apt-get update -y
+apt-get install nginx -y
+echo "Hello World!" > /var/www/html/index.html
+service nginx start
