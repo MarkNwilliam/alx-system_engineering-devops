@@ -1,0 +1,31 @@
+DNSUnderstanding the Journey of a URL: What happens when you type ‘https://www.google.com' and press Enter?
+
+Introduction
+My friend, have you ever wondered about the journey that occurs when you type ‘https://www.google.com' into your browser and hit that enter key? It’s like a fast-paced safari through the wilds of the internet, with each part of the process playing a crucial role in delivering the webpage to your screen. Let’s take a closer look at this fascinating adventure.
+
+Principle 1: DNS Request
+Imagine you’re trying to visit a friend but only know their name, not their address. That’s where the Domain Name System, or DNS, comes in. It translates ‘www.google.com' into an IP address, a unique identifier that serves as the ‘home address’ on the internet.
+
+Principle 2: TCP/IP
+Now we know where we’re going, but how do we get there? That’s where Transmission Control Protocol/Internet Protocol (TCP/IP) comes in. Like a trusted tour guide, TCP/IP sets the rules of the journey, making sure our request reaches the right destination and returns safely.
+
+Principle 3: Firewall
+Along the way, we must pass through a security checkpoint called a firewall. It’s like the rangers who protect our wildlife, making sure only safe and allowed traffic passes through.
+
+Principle 4: HTTPS/SSL
+Notice the ‘https://' in the URL? That ‘s’ stands for secure, meaning our safari is happening on a safe, encrypted connection. SSL (Secure Sockets Layer) is like the armored vehicle we’re traveling in, protecting us from any potential threats.
+
+Principle 5: Load-Balancer
+Once we reach Google’s servers, we encounter a hardworking gatekeeper called a load balancer. It ensures the traffic is distributed evenly across servers, so no single server gets overwhelmed, just like how a good guide would make sure all members of a tour group get equal attention.
+
+Principle 6: Web Server
+The web server is like the destination lodge where our requested webpage is stored. On receiving our request, it fetches the webpage and sends it back to us.
+
+Principle 7: Application Server
+Sometimes, the web server needs to chat with an application server, the chef who cooks up dynamic webpages using data from various sources, preparing the specific dish we ordered.
+
+Principle 8: Database
+The application server might need ingredients from a pantry known as the database. It’s where all the data associated with the website is stored and organized, ready to be used as needed.
+
+Conclusion
+My friend, this incredible safari from typing ‘https://www.google.com' to viewing the page happens in a blink of an eye, showcasing the marvels of modern web technology. Next time you hit enter, remember you’re setting off on a high-speed journey through the virtual savannah of the internet.
