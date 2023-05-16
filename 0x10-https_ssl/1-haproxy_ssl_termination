@@ -8,7 +8,7 @@ sudo apt-get update
 sudo apt-get install certbot haproxy nginx
 
 # Obtain the SSL certificate
-sudo certbot certonly --standalone -d www.aiglow.tech --preferred-challenges http -m nkugwamarkwilliam@gmail.com --agree-tos --no-eff-email
+sudo certbot certonly --standalone -d www.example.com --preferred-challenges http -m your-email@example.com --agree-tos --no-eff-email
 
 # Update the HAProxy configuration
 sudo bash -c "cat > /etc/haproxy/haproxy.cfg << EOL
@@ -50,15 +50,15 @@ backend servers
     balance roundrobin
     option forwardfor
     http-response set-header X-Served-By %[req.hdr(host)]
-    server 172004-web-01 54.157.136.99 check
-    server 172004-web-02 54.173.109.63 check
+    server web-01 54.157.136.99 check
+    server web-02 54.173.109.63 check
 EOL"
 
 # Restart HAProxy to apply the changes
 sudo systemctl restart haproxy
 
 # Update the Nginx configuration on web servers
-for ip in "54.157.136.99" "54.173.109.63"; do
+for ip in IP_ADDRESS_1 IP_ADDRESS_2; do
     ssh ubuntu@$ip "
     sudo sed -i 's|root /var/www/html;|return 200 \"Holberton School\n\";|g' /etc/nginx/sites-available/default;
     sudo systemctl restart nginx;

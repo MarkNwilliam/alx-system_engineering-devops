@@ -5,7 +5,7 @@ apt-get -y install --no-install-recommends software-properties-common
 add-apt-repository -y ppa:vbernat/haproxy-2.4
 apt-get -y install haproxy
 # the load balancer's configuration
-DOMAIN_NAME='b3zaleel-alx.tech'
+DOMAIN_NAME='aiglow.tech'
 INIT_FILE='/etc/default/haproxy'
 CONFIG_FILE='/etc/haproxy/haproxy.cfg'
 HAPROXY_LB_CONFIG=\
