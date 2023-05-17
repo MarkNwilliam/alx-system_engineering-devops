@@ -2,7 +2,7 @@
 ##########################################################
 # Script: MySQL Backup and Compression
 # Description: This script performs a MySQL database backup and compresses it into a tar.gz archive.
-# Author: Nkugwa Mark William
+# Author: Your Name
 ##########################################################
 
 # Check if password is supplied
@@ -12,7 +12,7 @@ if [ $# -ne 1 ]; then
 fi
 
 # MySQL root password
-password=$1
+password="$1"
 
 # Get date elements
 day=$(date +%d)
@@ -26,10 +26,10 @@ dump_file="backup.sql"
 archive_file="${day}-${month}-${year}.tar.gz"
 
 # Dump all databases
-mysqldump -u root -p$password --all-databases > $dump_file
+mysqldump -u root -p"${password}" --all-databases > "${dump_file}"
 
 # Compress the dump file into a tar.gz archive
-tar -czvf $archive_file $dump_file
+tar -czvf "${archive_file}" "${dump_file}"
 
 # Remove the dump file
-rm $dump_file
+rm "${dump_file}"
