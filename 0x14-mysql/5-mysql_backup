@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+##########################################################
+# Script: MySQL Backup and Compression
+# Description: This script performs a MySQL database backup and compresses it into a tar.gz archive.
+# Author: Nkugwa Mark William
+##########################################################
 
 # Check if password is supplied
 if [ $# -ne 1 ]; then
