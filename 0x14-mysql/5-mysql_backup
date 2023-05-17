@@ -5,6 +5,7 @@
 # Author: Your Name
 ##########################################################
 
+
 # Check if password is supplied
 if [ $# -ne 1 ]; then
     echo "Usage: $0 <mysql root password>"
@@ -29,17 +30,9 @@ archive_file="${day}-${month}-${year}.tar.gz"
 mysqldump -u root -p"${password}" --all-databases > "${dump_file}"
 
 # Compress the dump file into a tar.gz archive
-tar -czvf "${archive_file}" "${dump_file}" >/dev/null 2>&1
+tar -czvf "${archive_file}" "${dump_file}"
 
-# Check if compression was successful
-if [ $? -eq 0 ]; then
-    echo "Backup successfully created and compressed: ${archive_file}"
-    # Remove the dump file
-    rm "${dump_file}"
-else
-    echo "Backup compression failed."
-    # Remove the dump file and incomplete archive
-    rm "${dump_file}" "${archive_file}"
-    exit 1
-fi
+# Remove the dump file
+rm "${dump_file}"
 
+echo "Backup successfully created and compressed: ${archive_file}"
