@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Check if password is supplied
 if [ $# -ne 1 ]; then
