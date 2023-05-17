@@ -2,7 +2,7 @@
 ##########################################################
 # Script: MySQL Backup and Compression
 # Description: This script performs a MySQL database backup and compresses it into a tar.gz archive.
-# Author: Your Name
+# Author: Nkugwa
 ##########################################################
 
 
@@ -15,24 +15,25 @@ fi
 # MySQL root password
 password="$1"
 
-# Get date elements
-day=$(date +%d)
-month=$(date +%m)
-year=$(date +%Y)
+# Get current date
+current_date=$(date +%d-%m-%Y)
 
 # MySQL dump filename
 dump_file="backup.sql"
 
 # Archive filename
-archive_file="${day}-${month}-${year}.tar.gz"
+archive_file="${current_date}.tar.gz"
 
-# Dump all databases
-mysqldump -u root -p"${password}" --all-databases > "${dump_file}"
+# Dump all databases to backup.sql
+mysqldump -u root -p$password --all-databases > "$dump_file"
 
 # Compress the dump file into a tar.gz archive
-tar -czvf "${archive_file}" "${dump_file}"
+tar -czvf "$archive_file" "$dump_file"
 
 # Remove the dump file
-rm "${dump_file}"
+rm "$dump_file"
 
-echo "Backup successfully created and compressed: ${archive_file}"
+# Rename the dump file to backup.sql
+mv "$archive_file" "backup.sql"
+
+echo "Backup successfully created and compressed: backup.sql"
