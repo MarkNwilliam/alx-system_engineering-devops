@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 ##########################################################
 # Script: MySQL Backup and Compression
 # Description: This script performs a MySQL database backup and compresses it into a tar.gz archive.
@@ -29,7 +30,17 @@ archive_file="${day}-${month}-${year}.tar.gz"
 mysqldump -u root -p"${password}" --all-databases > "${dump_file}"
 
 # Compress the dump file into a tar.gz archive
-tar -czvf "${archive_file}" "${dump_file}"
+tar -czvf "${archive_file}" "${dump_file}" >/dev/null 2>&1
 
-# Remove the dump file
-rm "${dump_file}"
+# Check if compression was successful
+if [ $? -eq 0 ]; then
+    echo "Backup successfully created and compressed: ${archive_file}"
+    # Remove the dump file
+    rm "${dump_file}"
+else
+    echo "Backup compression failed."
+    # Remove the dump file and incomplete archive
+    rm "${dump_file}" "${archive_file}"
+    exit 1
+fi
+
