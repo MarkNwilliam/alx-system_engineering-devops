@@ -1,43 +1,27 @@
 #!/usr/bin/python3
-"""
-Python script that, using this REST API, for a given employee ID,
-returns information about his/her TODO list progress.
-"""
+'''
+Python script that returns information using REST API
+'''
 import requests
-import sys
+from sys import argv
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: {} employee_id".format(sys.argv[0]))
-        sys.exit(1)
-
-    employee_id = sys.argv[1]
-    base_url = "https://jsonplaceholder.typicode.com"
-    user_url = "{}/users/{}".format(base_url, employee_id)
-    todo_url = "{}/todos?userId={}".format(base_url, employee_id)
-
-    try:
-        user_response = requests.get(user_url)
-        todo_response = requests.get(todo_url)
-
-        employee_name = user_response.json().get('name')
-        todo_list = todo_response.json()
-
-        completed_tasks = [task for task in todo_list if task.get('completed')]
-        total_tasks = len(todo_list)
-        completed_tasks_count = len(completed_tasks)
-
-        print("Employee {} is done with tasks({}/{}):".format(
-            employee_name,
-            completed_tasks_count,
-            total_tasks
-        ))
-        for task in completed_tasks:
-            print("\t{}".format(task.get('title')))
-
-        # Additional line to match the expected output format
-        print("\n(18 chars long)")
-
-    except requests.exceptions.RequestException as e:
-        print("An error occurred:", e)
-        sys.exit(1)
+    if len(argv) > 1:
+        user = argv[1]
+        url = "https://jsonplaceholder.typicode.com/"
+        req = requests.get("{}users/{}".format(url, user))
+        name = req.json().get("name")
+        if name is not None:
+            jreq = requests.get(
+                "{}todos?userId={}".format(
+                    url, user)).json()
+            alltsk = len(jreq)
+            completedtsk = []
+            for t in jreq:
+                if t.get("completed") is True:
+                    completedtsk.append(t)
+            count = len(completedtsk)
+            print("Employee {} is done with tasks({}/{}):"
+                  .format(name, count, alltsk))
+            for title in completedtsk:
+                print("\t {}".format(title.get("title")))
